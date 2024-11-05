@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}Информация о рассылке{% endblock %}
+
+{% block content %}
+
+<div class="card mt-4">
+    <div class="card-header">
+        <h2 class="card-title">Информация о рассылке</h2>
+    </div>
+    <div class="card-body">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">Дата и время первой отправки:
+                {{ mailing.date_first_message|date:"d.M.Y H:i:s" }}</li>
+            <li class="list-group-item">Дата и время окончания отправки:
+                {{ mailing.date_end_message|date:"d.M.Y H:i:s" }}</li>
+            <li class="list-group-item">Тема сообщения: {{ mailing.message.theme_message }}</li>
+            <li class="list-group-item">Текст сообщения: {{ mailing.message.text }}</li>
+            <li class="list-group-item">Статус: {{ mailing.get_status_display }}</li>
+            <li class="list-group-item">Получатели:
+                <ul>
+                    {% for recipient in mailing.recipient.all %}
+                        <li>{{ recipient.full_name }} ({{ recipient.email }})</li>
+                    {% empty %}
+                        <li>Нет получателей</li>
+                    {% endfor %}
+                </ul>
+            </li>
+        </ul>
+    </div>
+    <div class="card-footer">
+        <div class="btn-group">
+            <a href="{% url 'mailing:send_mailing' mailing.pk %}" class="btn btn-success">
+                Отправить рассылку
+            </a>
+
+            <form action="{% url 'mailing:send_deactivate' mailing.pk %}" method="post" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-warning">Отключить рассылку</button>
+            </form>
+            <a href="{% url 'mailing:mailing_update' mailing.pk %}" class="btn btn-primary">
+                Редактировать
+            </a>
+            <a href="{% url 'mailing:mailing_delete' mailing.pk %}" class="btn btn-danger">
+                Удалить
+            </a>
+            <a href="{% url 'mailing:mailing_list' %}" class="btn btn-secondary">
+                Назад
+            </a>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

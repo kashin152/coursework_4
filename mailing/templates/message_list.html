@@ -1,0 +1,39 @@
+{% extends 'base.html'%}
+
+{% block title %}Список сообщений{% endblock %}
+
+{% block content %}
+
+<div class="card mt-4">
+    <div class="card-header">
+        <h2 class="mb-1">Список сообщений</h2>
+    </div>
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <a class="btn btn-primary" href="{% url 'mailing:message_create' %}">
+        Добавить сообщение
+        </a>
+
+    </div>
+    <div class="table-responsive small">
+        <table class="table table-striped table-sm">
+            <thead>
+                <tr>
+                    <th scope="col">Тема сообщения</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for message in messages %}
+                <tr>
+                    <td>
+                        <a href="{% url 'mailing:message_detail' message.id %}">{{ message.theme_message }}</a>
+                    </td>
+                </tr>
+                {% empty %}
+                 <tr>
+                    <td colspan="3">Нет сообщений.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+    </table>
+</div>
+{% endblock %}

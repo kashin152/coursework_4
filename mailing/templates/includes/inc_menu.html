@@ -1,0 +1,23 @@
+<div class="d-flex flex-column align-items-center p-3 px-md-4 mb-3 bg-white border-bottom box-shadow">
+    <div class="d-flex flex-column flex-md-row align-items-start w-100"> <!-- Основной контейнер -->
+        <div class="me-auto d-flex flex-wrap" >  <!-- Контейнер для кнопок слева -->
+            <nav>
+                <a class="p-2 btn btn-outline-primary" href="{% url 'mailing:home' %}">Главная страница</a>
+                <a class="p-2 btn btn-outline-primary" href="{% url 'mailing:recipient_list' %}">Получатели</a>
+                <a class="p-2 btn btn-outline-primary" href="{% url 'mailing:message_list' %}">Сообщения</a>
+                <a class="p-2 btn btn-outline-primary" href="{% url 'mailing:mailing_list' %}">Рассылки</a>
+                <a class="p-2 btn btn-outline-primary" href="#">Попытки рассылок</a>
+            </nav>
+        </div>
+
+        <div class="ms-auto d-flex flex-wrap">  <!-- Контейнер для кнопок справа -->
+            <form method="post" action="#" class="d-inline">
+                {% csrf_token %}
+                <button type="submit" class="p-2 btn btn-outline-primary">Выйти</button>
+                <a class="p-2 btn btn-outline-primary" href="#">Отчеты и статистика</a>
+            </form>
+            <a class="p-2 btn btn-outline-primary" href="#">Войти</a>
+            <a class="p-2 btn btn-outline-primary" href="#">Регистрация</a>
+        </div>
+    </div>
+</div>
