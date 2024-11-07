@@ -4,8 +4,8 @@ from django.conf.urls.static import static
 from config import settings
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path("mailing/", include("mailing.urls", namespace="mailing"))
+    path("admin/", admin.site.urls),
+    path("mailing/", include("mailing.urls", namespace="mailing")),
 ]
 
 

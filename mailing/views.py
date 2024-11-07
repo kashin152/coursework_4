@@ -25,11 +25,13 @@ class MailingHomeView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         # Количество всех рассылок
-        context['all_mailings_count'] = Mailing.objects.count()
+        context["all_mailings_count"] = Mailing.objects.count()
         # Количество активных рассылок
-        context['active_mailings_count'] = Mailing.objects.filter(status="running").count()
+        context["active_mailings_count"] = Mailing.objects.filter(
+            status="running"
+        ).count()
         # Количество уникальных получателей
-        context['unique_recipients_count'] = Recipient.objects.distinct().count()
+        context["unique_recipients_count"] = Recipient.objects.distinct().count()
 
         return context
 
@@ -135,20 +137,39 @@ class SendMailingView(View):
 
     def get(self, request, pk):
         mailing = get_object_or_404(Mailing, pk=pk)
-
-        # Проверяем, если рассылка завершена, сбрасываем ее
-        if mailing.status == "completed":
-            mailing.reset_mailing()
-
-        # Запускаем рассылку
         response = mailing.send_mailing()
-
-        return render(request, 'mailing_detail.html', {'mailing': mailing, 'response': response})
+        return render(
+            request, "mailing_detail.html", {"mailing": mailing, "response": response}
+        )
 
     def post(self, request, pk):
         mailing = get_object_or_404(Mailing, pk=pk)
+
+        # Отключаем рассылку
         mailing.is_active = False  # Отключаем рассылку
-        mailing.status = "completed"  # Меняем статус на "Завершена"
+        mailing.status = "deactivated"  # Меняем статус на "Отключена"
         mailing.date_end_message = timezone.now()  # Устанавливаем дату окончания
         mailing.save()
-        return render(request, 'mailing_detail.html', {'mailing': mailing})
+
+        return render(
+            request,
+            "mailing_detail.html",
+            {"mailing": mailing, "message": "Рассылка отключена."},
+        )
+
+
+class MailingAttemptListView(ListView):
+    model = MailingAttempt
+    template_name = "mailing_attempt_list.html"
+    context_object_name = "mailing_attempt_list"
+
+    def get_context_data(self, **kwargs):
+        """Добавление переменных в шаблон страницы статистики"""
+        context = super().get_context_data(**kwargs)
+        queryset = self.get_queryset()
+        context["attempts_count"] = queryset.count()
+        context["attempts_success_count"] = queryset.filter(status="successfully").count()
+        context["attempts_error_count"] = queryset.filter(status="not_successfully").count()
+        return context
+
+

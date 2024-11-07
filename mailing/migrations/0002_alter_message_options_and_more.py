@@ -6,17 +6,21 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('mailing', '0001_initial'),
+        ("mailing", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='message',
-            options={'ordering': ['theme_message'], 'verbose_name': 'Сообщение', 'verbose_name_plural': 'Сообщения'},
+            name="message",
+            options={
+                "ordering": ["theme_message"],
+                "verbose_name": "Сообщение",
+                "verbose_name_plural": "Сообщения",
+            },
         ),
         migrations.RenameField(
-            model_name='message',
-            old_name='tema_message',
-            new_name='theme_message',
+            model_name="message",
+            old_name="tema_message",
+            new_name="theme_message",
         ),
     ]

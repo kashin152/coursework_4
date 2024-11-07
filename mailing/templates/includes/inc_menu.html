@@ -6,7 +6,7 @@
                 <a class="p-2 btn btn-outline-primary" href="{% url 'mailing:recipient_list' %}">Получатели</a>
                 <a class="p-2 btn btn-outline-primary" href="{% url 'mailing:message_list' %}">Сообщения</a>
                 <a class="p-2 btn btn-outline-primary" href="{% url 'mailing:mailing_list' %}">Рассылки</a>
-                <a class="p-2 btn btn-outline-primary" href="#">Попытки рассылок</a>
+                <a class="p-2 btn btn-outline-primary" href="{% url 'mailing:mailing_attempt_list' %}">Попытки рассылок</a>
             </nav>
         </div>
 

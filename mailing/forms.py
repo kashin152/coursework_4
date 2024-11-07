@@ -29,5 +29,9 @@ class MailingForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["message"].queryset = Message.objects.all()  # Все существующие сообщения
-        self.fields["recipient"].queryset = Recipient.objects.all()  # Все существующие получатели
+        self.fields["message"].queryset = (
+            Message.objects.all()
+        )  # Все существующие сообщения
+        self.fields["recipient"].queryset = (
+            Recipient.objects.all()
+        )  # Все существующие получатели
