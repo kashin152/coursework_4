@@ -14,7 +14,7 @@ from django.views.generic import (
 )
 
 from mailing.forms import RecipientForm, MessageForm, MailingForm
-from mailing.models import Recipient, Message, Mailing, MailingAttempt
+from mailing.models import Recipient, Message, Mailing, MailingAttempt, send_mailing_service
 
 
 class MailingHomeView(ListView):
@@ -137,7 +137,7 @@ class SendMailingView(View):
 
     def get(self, request, pk):
         mailing = get_object_or_404(Mailing, pk=pk)
-        response = mailing.send_mailing()
+        response = send_mailing_service()
         return render(
             request, "mailing_detail.html", {"mailing": mailing, "response": response}
         )
