@@ -11,13 +11,21 @@
         </div>
 
         <div class="ms-auto d-flex flex-wrap">  <!-- Контейнер для кнопок справа -->
-            <form method="post" action="#" class="d-inline">
+            {% if user.is_authenticated %}
+            <form method="post" action="{% url 'users:logout' %}" class="d-inline">
                 {% csrf_token %}
                 <button type="submit" class="p-2 btn btn-outline-primary">Выйти</button>
                 <a class="p-2 btn btn-outline-primary" href="#">Отчеты и статистика</a>
             </form>
-            <a class="p-2 btn btn-outline-primary" href="#">Войти</a>
-            <a class="p-2 btn btn-outline-primary" href="#">Регистрация</a>
+            {% else %}
+            <a class="p-2 btn btn-outline-primary" href="{% url 'users:login' %}">Войти</a>
+            <a class="p-2 btn btn-outline-primary" href="{% url 'users:register' %}">Регистрация</a>
+            {% endif %}
         </div>
     </div>
 </div>
+
+
+{% if user.is_authenticated %}
+
+            {% endif %}

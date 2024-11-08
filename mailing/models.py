@@ -3,6 +3,10 @@ from django.db.models import BooleanField
 from django.core.mail import send_mail, BadHeaderError
 from django.utils import timezone
 
+from config import settings
+from config.settings import EMAIL_HOST_USER
+from users.models import CustomsUser
+
 
 class Recipient(models.Model):
     """Модель получателя рассылки"""
@@ -11,6 +15,13 @@ class Recipient(models.Model):
     full_name = models.CharField(verbose_name="ФИО получателя", unique=True)
     comment = models.TextField(
         max_length=150, null=True, blank=True, verbose_name="Комментарий"
+    )
+    owner = models.ForeignKey(
+        CustomsUser,
+        verbose_name="Владелец",
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
     )
 
     def __str__(self):
@@ -27,6 +38,13 @@ class Message(models.Model):
 
     theme_message = models.CharField(max_length=150, verbose_name="Тема письма")
     text = models.TextField(null=True, blank=True)
+    owner = models.ForeignKey(
+        CustomsUser,
+        verbose_name="Владелец",
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+    )
 
     def __str__(self):
         return self.theme_message
@@ -62,6 +80,13 @@ class Mailing(models.Model):
         default="created",
         verbose_name="Статус",
     )
+    owner = models.ForeignKey(
+        CustomsUser,
+        verbose_name="Владелец",
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+    )
 
     # def send_mailing(self):
     #     if self.status != "created":
@@ -79,7 +104,7 @@ class Mailing(models.Model):
     #             send_mail(
     #                 subject=self.message.theme_message,
     #                 message=self.message.text,
-    #                 from_email="from@example.com",
+    #                 from_email=EMAIL_HOST_USER,
     #                 recipient_list=[recipient.email],
     #             )
     #
@@ -140,7 +165,7 @@ def send_mailing_service():
                     send_mail(
                         subject=mailing.message.theme_message,
                         message=mailing.message.text,
-                        from_email="from@example.com",
+                        from_email=EMAIL_HOST_USER,
                         recipient_list=[recipient.email],
                     )
 
@@ -203,6 +228,13 @@ class MailingAttempt(models.Model):
         blank=True,
         default="created",
         verbose_name="Статус",
+    )
+    owner = models.ForeignKey(
+        CustomsUser,
+        verbose_name="Владелец",
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
     )
 
     def formatted_date_time(self):

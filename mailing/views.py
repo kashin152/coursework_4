@@ -23,12 +23,14 @@ class MailingHomeView(ListView):
     context_object_name = "mailings"
 
     def get_context_data(self, **kwargs):
+
         context = super().get_context_data(**kwargs)
+
         # Количество всех рассылок
         context["all_mailings_count"] = Mailing.objects.count()
         # Количество активных рассылок
         context["active_mailings_count"] = Mailing.objects.filter(
-            status="running"
+            status="running",
         ).count()
         # Количество уникальных получателей
         context["unique_recipients_count"] = Recipient.objects.distinct().count()
@@ -36,18 +38,34 @@ class MailingHomeView(ListView):
         return context
 
 
-class RecipientCreateView(CreateView):
+class RecipientCreateView(LoginRequiredMixin, CreateView):
     model = Recipient
     form_class = RecipientForm
     template_name = "recipient_create.html"
     success_url = reverse_lazy("mailing:home")
 
+    def form_valid(self, form):
+        # Автоматически присваиваем пользователя созданному получателю
+        recipient = form.save()
+        user = self.request.user
+        recipient.owner = user
+        recipient.save()
+        return super().form_valid(form)
 
-class RecipientUpdateView(UpdateView):
+
+class RecipientUpdateView(LoginRequiredMixin, UpdateView):
     model = Recipient
     form_class = RecipientForm
     template_name = "recipient_create.html"
     success_url = reverse_lazy("mailing:recipient_list")
+
+    # def get_form_class(self):
+    #     user = self.request.user
+    #     if user == self.object.owner:
+    #         return RecipientForm
+    #     if user.has_perm("product.can_unpublish_product"):
+    #         return ProductModeratorForm
+    #     raise PermissionDenied
 
 
 class RecipientDeleteView(DeleteView):
@@ -73,6 +91,14 @@ class MessageCreateView(CreateView):
     form_class = MessageForm
     template_name = "message_create.html"
     success_url = reverse_lazy("mailing:home")
+
+    def form_valid(self, form):
+        # Автоматически присваиваем пользователя созданному получателю
+        recipient = form.save()
+        user = self.request.user
+        recipient.owner = user
+        recipient.save()
+        return super().form_valid(form)
 
 
 class MessageUpdateView(UpdateView):
@@ -111,6 +137,14 @@ class MailingCreateView(CreateView):
     form_class = MailingForm
     template_name = "mailing_create.html"
     success_url = reverse_lazy("mailing:mailing_list")
+
+    def form_valid(self, form):
+        # Автоматически присваиваем пользователя созданному получателю
+        recipient = form.save()
+        user = self.request.user
+        recipient.owner = user
+        recipient.save()
+        return super().form_valid(form)
 
 
 class MailingUpdateView(UpdateView):

@@ -16,12 +16,14 @@
     </div>
     <div class="card-footer">
         <div class="btn-group">
+            {% if mailing.owner == user %}
             <a href="{% url 'mailing:recipient_update' recipient.id %}" class="btn btn-primary">
                 Редактировать
             </a>
             <a href="{% url 'mailing:recipient_delete' recipient.id %}" class="btn btn-danger">
                 Удалить
             </a>
+            {% endif %}
             <a href="{% url 'mailing:recipient_list' %}" class="btn btn-secondary">
                 Назад
             </a>

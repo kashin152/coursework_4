@@ -8,7 +8,7 @@ class RecipientForm(forms.ModelForm):
 
     class Meta:
         model = Recipient
-        fields = ["full_name", "email", "comment"]
+        fields = ["full_name", "email", "comment", "owner"]
 
 
 class MessageForm(forms.ModelForm):
@@ -16,7 +16,7 @@ class MessageForm(forms.ModelForm):
 
     class Meta:
         model = Message
-        fields = ["theme_message", "text"]
+        fields = ["theme_message", "text", "owner"]
         widgets = {
             "text": forms.Textarea(attrs={"placeholder": "Введите ваше сообщение..."}),
         }
@@ -25,7 +25,7 @@ class MessageForm(forms.ModelForm):
 class MailingForm(forms.ModelForm):
     class Meta:
         model = Mailing
-        fields = ["message", "recipient"]  # Укажите поля для выбора
+        fields = ["message", "recipient", "owner"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

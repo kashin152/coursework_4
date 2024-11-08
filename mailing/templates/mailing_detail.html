@@ -30,6 +30,7 @@
     </div>
     <div class="card-footer">
         <div class="btn-group">
+            {% if mailing.owner == user %}
             <form action="{% url 'mailing:send_mailing' mailing.pk %}" method="get" style="display:inline;">
                 {% csrf_token %}
                 <button type="submit" class="btn btn-success">Отправить рассылку</button>
@@ -44,6 +45,7 @@
             <a href="{% url 'mailing:mailing_delete' mailing.pk %}" class="btn btn-danger">
                 Удалить
             </a>
+            {% endif %}
             <a href="{% url 'mailing:mailing_list' %}" class="btn btn-secondary">
                 Назад
             </a>
