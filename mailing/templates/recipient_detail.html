@@ -1,6 +1,6 @@
-{% extends 'base.html'%}
+{% extends 'base.html' %}
 {% block title %}Информация о получателе{% endblock %}
-{% include 'includes/inc_menu.html'%}
+{% include 'includes/inc_menu.html' %}
 {% block content %}
 
 <div class="card mt-4">
@@ -9,20 +9,21 @@
     </div>
     <div class="card-body">
         <ul class="list-group list-group-flush">
-            <li class="list-group-item">ФИО: {{ recipient.full_name  }}</li>
+            <li class="list-group-item">ФИО: {{ recipient.full_name }}</li>
             <li class="list-group-item">Email: {{ recipient.email }}</li>
             <li class="list-group-item">Комментарий: {{ recipient.comment|truncatechars:30 }}</li>
         </ul>
     </div>
     <div class="card-footer">
         <div class="btn-group">
-            {% if mailing.owner == user %}
+            {% if recipient.owner == user %}
             <a href="{% url 'mailing:recipient_update' recipient.id %}" class="btn btn-primary">
                 Редактировать
             </a>
-            <a href="{% url 'mailing:recipient_delete' recipient.id %}" class="btn btn-danger">
-                Удалить
-            </a>
+            <form action="{% url 'mailing:recipient_delete' recipient.id %}" method="post" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Удалить</button>
+            </form>
             {% endif %}
             <a href="{% url 'mailing:recipient_list' %}" class="btn btn-secondary">
                 Назад

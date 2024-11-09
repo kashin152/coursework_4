@@ -6,7 +6,6 @@
                 <a class="p-2 btn btn-outline-primary" href="{% url 'mailing:recipient_list' %}">Получатели</a>
                 <a class="p-2 btn btn-outline-primary" href="{% url 'mailing:message_list' %}">Сообщения</a>
                 <a class="p-2 btn btn-outline-primary" href="{% url 'mailing:mailing_list' %}">Рассылки</a>
-                <a class="p-2 btn btn-outline-primary" href="{% url 'mailing:mailing_attempt_list' %}">Попытки рассылок</a>
             </nav>
         </div>
 
@@ -15,7 +14,7 @@
             <form method="post" action="{% url 'users:logout' %}" class="d-inline">
                 {% csrf_token %}
                 <button type="submit" class="p-2 btn btn-outline-primary">Выйти</button>
-                <a class="p-2 btn btn-outline-primary" href="#">Отчеты и статистика</a>
+                <a class="p-2 btn btn-outline-primary" href="{% url 'mailing:mailing_attempt_list' %}">Отчеты и статистика</a>
             </form>
             {% else %}
             <a class="p-2 btn btn-outline-primary" href="{% url 'users:login' %}">Войти</a>

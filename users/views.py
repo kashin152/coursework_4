@@ -16,7 +16,7 @@ class RegisterView(CreateView):
     model = CustomsUser
     template_name = "register.html"
     form_class = CustomUserCreationForm
-    success_url = reverse_lazy("mailing:home")
+    success_url = reverse_lazy("users:login")
 
     def form_valid(self, form):
         # Сохраняем пользователя только если форма валидна
@@ -43,5 +43,5 @@ def email_verification(request, token):
     user = get_object_or_404(CustomsUser, token=token)
     user.is_active = True
     user.save()
-    return redirect(request("users:login"))
+    return redirect("users:login")
 

@@ -69,6 +69,6 @@ urlpatterns = [
         "mailing_update/<int:pk>/", MailingUpdateView.as_view(), name="mailing_update"
     ),
     path("<int:pk>", SendMailingView.as_view(), name="send_mailing"),
-    path("<int:pk>", SendMailingView.as_view(), name="send_deactivate"),
+    # path("<int:pk>", SendMailingView.as_view(), name="send_deactivate"),
     path("mailing_attempt_list/", MailingAttemptListView.as_view(), name="mailing_attempt_list"),
 ]

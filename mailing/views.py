@@ -176,20 +176,23 @@ class SendMailingView(View):
             request, "mailing_detail.html", {"mailing": mailing, "response": response}
         )
 
-    def post(self, request, pk):
-        mailing = get_object_or_404(Mailing, pk=pk)
 
-        # Отключаем рассылку
-        mailing.is_active = False  # Отключаем рассылку
-        mailing.status = "deactivated"  # Меняем статус на "Отключена"
-        mailing.date_end_message = timezone.now()  # Устанавливаем дату окончания
-        mailing.save()
 
-        return render(
-            request,
-            "mailing_detail.html",
-            {"mailing": mailing, "message": "Рассылка отключена."},
-        )
+
+    # def post(self, request, pk):
+    #     mailing = get_object_or_404(Mailing, pk=pk)
+    #
+    #     # Отключаем рассылку
+    #     mailing.is_active = False  # Отключаем рассылку
+    #     mailing.status = "deactivated"  # Меняем статус на "Отключена"
+    #     mailing.date_end_message = timezone.now()  # Устанавливаем дату окончания
+    #     mailing.save()
+    #
+    #     return render(
+    #         request,
+    #         "mailing_detail.html",
+    #         {"mailing": mailing, "message": "Рассылка отключена."},
+    #     )
 
 
 class MailingAttemptListView(ListView):

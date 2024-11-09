@@ -17,7 +17,7 @@
     </div>
     <div class="card-footer">
         <div class="btn-group">
-            {% if mailing.owner == user %}
+            {% if message.owner == user %}
             <a href="{% url 'mailing:message_update'  message.pk %}" class="btn btn-primary">
                 Редактировать
             </a>

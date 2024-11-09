@@ -31,14 +31,12 @@
     <div class="card-footer">
         <div class="btn-group">
             {% if mailing.owner == user %}
-            <form action="{% url 'mailing:send_mailing' mailing.pk %}" method="get" style="display:inline;">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-success">Отправить рассылку</button>
-            </form>
-            <form action="{% url 'mailing:send_deactivate' mailing.pk %}" method="post" style="display:inline;">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-warning">Отключить рассылку</button>
-            </form>
+            <a href="{% url 'mailing:send_mailing' mailing.pk %}" class="btn btn-success">
+                {% if mailing.status == "created" %}
+                Отправить рассылку
+                {% else %}
+                Отправить повторно
+                {% endif %}
             <a href="{% url 'mailing:mailing_update' mailing.pk %}" class="btn btn-primary">
                 Редактировать
             </a>
