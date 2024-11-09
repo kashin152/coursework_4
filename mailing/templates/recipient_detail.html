@@ -16,7 +16,7 @@
     </div>
     <div class="card-footer">
         <div class="btn-group">
-            {% if recipient.owner == user %}
+            {% if recipient.owner == user or perms.user.recipient_delete %
             <a href="{% url 'mailing:recipient_update' recipient.id %}" class="btn btn-primary">
                 Редактировать
             </a>

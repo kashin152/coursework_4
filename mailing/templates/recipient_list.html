@@ -26,19 +26,23 @@
             </tr>
         </thead>
         <tbody>
-            {% for recipient in recipients %}
-            <tr>
-                <td>
-                    <a href="{% url 'mailing:recipient_detail' recipient.id %}">{{ recipient.full_name }}</a>
-                </td>
-                <td>{{ recipient.email }}</td>
-                <td>{{ recipient.comment|truncatechars:30 }}</td>
-            </tr>
-            {% empty %}
-             <tr>
-                <td colspan="3">Нет получателей.</td>
-            </tr>
-            {% endfor %}
+            {% if recipient %}
+                {% for recipient in recipients %}
+                    {% if user == recipient.owner or user.is_staff or perms.mailing.can_view_all_recipients or user.is_authenticated%}
+                        <tr>
+                            <td>
+                                <a href="{% url 'mailing:recipient_detail' recipient.id %}">{{ recipient.full_name }}</a>
+                            </td>
+                            <td>{{ recipient.email }}</td>
+                            <td>{{ recipient.comment|truncatechars:30 }}</td>
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+                 <tr>
+                    <td colspan="3">Нет получателей.</td>
+                </tr>
+            {% endif %}
         </tbody>
     </table>
 </div>

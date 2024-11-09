@@ -24,17 +24,21 @@
                 </tr>
             </thead>
             <tbody>
-                {% for message in messages %}
-                <tr>
-                    <td>
-                        <a href="{% url 'mailing:message_detail' message.id %}">{{ message.theme_message }}</a>
-                    </td>
-                </tr>
-                {% empty %}
-                 <tr>
-                    <td colspan="3">Нет сообщений.</td>
-                </tr>
-                {% endfor %}
+                {% if message %}
+                    {% for message in messages %}
+                        {% if user == message.owner or user.is_staff or perms.mailing.can_view_all_messages or user.is_authenticated %}
+                            <tr>
+                                <td>
+                                    <a href="{% url 'mailing:message_detail' message.id %}">{{ message.theme_message }}</a>
+                                </td>
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="3">Нет сообщений.</td>
+                    </tr>
+                {% endif %}
             </tbody>
     </table>
 </div>
