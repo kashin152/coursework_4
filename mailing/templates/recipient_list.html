@@ -26,9 +26,9 @@
             </tr>
         </thead>
         <tbody>
-            {% if recipient %}
+            {% if recipients %}
                 {% for recipient in recipients %}
-                    {% if user == recipient.owner or user.is_staff or perms.mailing.can_view_all_recipients or user.is_authenticated%}
+                    {% if user == recipient.owner or user.is_staff or perms.mailing.can_view_other_client or user.is_authenticated%}
                         <tr>
                             <td>
                                 <a href="{% url 'mailing:recipient_detail' recipient.id %}">{{ recipient.full_name }}</a>

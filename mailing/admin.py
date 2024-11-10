@@ -40,7 +40,13 @@ class MailingAdmin(admin.ModelAdmin):
 
 @admin.register(MailingAttempt)
 class MailingAttemptAdmin(admin.ModelAdmin):
-    list_display = ("id", "date_time_attempt", "status", "mail_server_response", "mailing")
+    list_display = (
+        "id",
+        "date_time_attempt",
+        "status",
+        "mail_server_response",
+        "mailing",
+    )
     list_filter = (
         "status",
         "date_time_attempt",

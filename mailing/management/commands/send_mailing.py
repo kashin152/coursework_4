@@ -3,16 +3,22 @@ from mailing.models import Mailing
 
 
 class Command(BaseCommand):
-    help = "Отправить рассылку по ID"
+    help = "Начать рассылку"
 
     def add_arguments(self, parser):
         parser.add_argument("mailing_id", type=int)
 
-    def handle(self, *args, **kwargs):
-        mailing_id = kwargs["mailing_id"]
+    def handle(self, *args, **options):
+        mailing_id = options["mailing_id"]
         try:
             mailing = Mailing.objects.get(pk=mailing_id)
-            mailing.send_mailing()
-            self.stdout.write(self.style.SUCCESS("Рассылка отправлена успешно."))
         except Mailing.DoesNotExist:
-            self.stdout.write(self.style.ERROR("Рассылка не найдена."))
+            self.stderr.write(self.style.ERROR(f"Mailing with id {mailing_id} not found."))
+            return
+
+        if mailing.status != "Создана":
+            self.stderr.write(self.style.ERROR(f'Mailing with id {mailing_id} is not in "Создана" status.'))
+            return
+
+        mailing.send_mailing()
+        self.stdout.write(self.style.SUCCESS(f"Mailing with id {mailing_id} started."))

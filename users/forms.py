@@ -17,6 +17,7 @@ class CustomUserCreationForm(UserCreationForm):
             "email",
             "first_name",
             "last_name",
+            "avatar",
             "phone_number",
             "password1",
             "password2",
@@ -27,3 +28,32 @@ class CustomUserCreationForm(UserCreationForm):
         if phone_number and not phone_number.isdigit():
             raise forms.ValidationError("номер телефона должен состоять только из цифр")
         return phone_number
+
+    def clean_avatar(self):
+        cleaned_data = super().clean()
+        avatar = cleaned_data.get("image")
+
+        if avatar is None:
+            return None
+
+        if avatar.size > 5 * 1024 * 1024:
+            raise forms.ValidationError("Размер файла не должен превышать 5MB.")
+
+        if not avatar.name.endswith(("jpg", "jpeg", "png")):
+            raise forms.ValidationError(
+                "Формат файла не соответствует требованиям. " "Формат файла должен быть *.jpg, *.jpeg, *.png"
+            )
+
+        return avatar
+
+
+class CustomUserUpdateForm(UserCreationForm):
+
+    class Meta:
+        model = CustomsUser
+        fields = (
+            "first_name",
+            "last_name",
+            "avatar",
+            "phone_number",
+        )

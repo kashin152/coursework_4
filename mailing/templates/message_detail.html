@@ -9,7 +9,7 @@
     <div class="card-header">
         <h2 class="card-title">Информация о сообщении</h2>
     </div>
-    {% if message.owner == user % or perms.mailing.can_view_all_messages %}
+    {% if message.owner == user or perms.mailing.can_view_all_messages %}
     <div class="card-body">
         <ul class="list-group list-group-flush">
             <li class="list-group-item">Тема: {{ message.theme_message }}</li>

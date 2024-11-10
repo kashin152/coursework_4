@@ -8,7 +8,7 @@ class RecipientForm(forms.ModelForm):
 
     class Meta:
         model = Recipient
-        fields = ["full_name", "email", "comment", "owner"]
+        fields = ["full_name", "email", "comment"]
 
 
 class MessageForm(forms.ModelForm):
@@ -25,13 +25,10 @@ class MessageForm(forms.ModelForm):
 class MailingForm(forms.ModelForm):
     class Meta:
         model = Mailing
-        fields = ["message", "recipient", "owner"]
+        fields = ['message', 'recipient']  # Убедитесь, что эти поля есть в вашей модели
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, user, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["message"].queryset = (
-            Message.objects.all()
-        )  # Все существующие сообщения
-        self.fields["recipient"].queryset = (
-            Recipient.objects.all()
-        )  # Все существующие получатели
+        # Фильтруем получателей и сообщения по текущему пользователю
+        self.fields['recipient'].queryset = Recipient.objects.filter(owner=user)
+        self.fields['message'].queryset = Message.objects.filter(owner=user)

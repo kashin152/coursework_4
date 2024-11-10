@@ -1,4 +1,3 @@
-from datetime import timezone
 from config.settings import CACHE_ENABLED
 from django.core.cache import cache
 from mailing.models import Mailing, Message, Recipient, MailingAttempt
@@ -47,9 +46,15 @@ def get_recipient_from_cache():
     return recipients
 
 
-def send_mailing_service():
-    # Фильтруем рассылки по статусу "Создана" и текущему времени
-    mailings_to_send = Mailing.objects.filter(Q(status="created") | Q(status="completed"), date_first_message__lte=timezone.now())
+def send_mailing(mailing: Mailing = None):
+    if not mailing:
+        # Фильтруем рассылки по статусу и текущему времени
+        mailings_to_send = Mailing.objects.filter(
+            Q(status="created") | Q(status="completed") | Q(status="unblocked"),
+            date_first_message__lte=timezone.now(),
+        )
+    else:
+        mailings_to_send = [mailing]
 
     for mailing in mailings_to_send:
         # Меняем статус на "Запущена" перед началом отправки

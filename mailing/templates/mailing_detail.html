@@ -8,7 +8,7 @@
     <div class="card-header">
         <h2 class="card-title">Информация о рассылке {{ mailing.pk }}</h2>
     </div>
-    {% if user == mailing.owner or user.is_staff or perms.mailing.can_view_all_mailings%}
+    {% if user == mailing.owner or user.is_staff or perms.mailing.can_view_other_mailing  %}
         <div class="card-body">
             <ul class="list-group list-group-flush">
                 <li class="list-group-item">Дата и время первой отправки:
@@ -31,13 +31,23 @@
         </div>
         <div class="card-footer">
             <div class="btn-group">
+                {% if perms.spam.can_disable_mailings or user.is_staff or perms.mailing.can_mailing_blocked %}
+                    {% if mailing.is_blocked %}
+                        <td><a href="{% url 'mailing:mailing_block' mailing.id %}" class="btn btn-warning">Разблокировать рассылку</a></td>
+                    {% else %}
+                        <td><a href="{% url 'mailing:mailing_block' mailing.id %}" class="btn btn-warning">Заблокировать рассылку</a></td>
+                    {% endif %}
+                {% endif %}
                 {% if user == mailing.owner or user.is_staff %}
-                    <a href="{% url 'mailing:send_mailing' mailing.pk %}" class="btn btn-success">
-                        {% if mailing.status == "created" %}
-                        Отправить рассылку
-                        {% else %}
-                        Отправить повторно
-                        {% endif %}
+                    {% if not mailing.is_blocked %}
+                        <a href="{% url 'mailing:send_mailing' mailing.pk %}" class="btn btn-success">
+                            {% if mailing.status == "created" %}
+                                Отправить рассылку
+                            {% else %}
+                                Отправить повторно
+                            {% endif %}
+                        </a>
+                    {% endif %}
                     <a href="{% url 'mailing:mailing_update' mailing.pk %}" class="btn btn-primary">
                         Редактировать
                     </a>

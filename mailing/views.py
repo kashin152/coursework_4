@@ -1,4 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import HttpResponseForbidden
 from django.core.exceptions import PermissionDenied
 from django.views import View
 from django.shortcuts import render, redirect, get_object_or_404
@@ -13,8 +14,11 @@ from django.views.generic import (
 
 from mailing.forms import RecipientForm, MessageForm, MailingForm
 from mailing.models import Recipient, Message, Mailing, MailingAttempt
-from mailing.servicies import get_mailing_from_cache, get_message_from_cache, get_recipient_from_cache, \
-    send_mailing_service
+from mailing.servicies import (
+    get_mailing_from_cache,
+    get_message_from_cache,
+    send_mailing,
+)
 
 
 class MailingHomeView(ListView):
@@ -63,7 +67,9 @@ class RecipientUpdateView(LoginRequiredMixin, UpdateView):
         try:
             return super().get_object(queryset)
         except Recipient.DoesNotExist:
-            raise PermissionDenied("У Вас нет прав для редактирования этого получателя.")
+            raise PermissionDenied(
+                "У Вас нет прав для редактирования этого получателя."
+            )
 
 
 class RecipientDeleteView(DeleteView):
@@ -73,9 +79,9 @@ class RecipientDeleteView(DeleteView):
 
     def test_func(self):
         return (
-                self.request.user.is_authenticated
-                and self.request.user.has_perm("mailing.recipient_delete")
-                or self.request.user.owner
+            self.request.user.is_authenticated
+            and self.request.user.has_perm("mailing.recipient_delete")
+            or self.request.user.owner
         )
 
     def handle_no_permission(self):
@@ -88,11 +94,14 @@ class RecipientListView(ListView):
     context_object_name = "recipients"
 
     def get_queryset(self):
-        if self.request.user.is_superuser or self.request.user.has_perm('can_view_all_recipients'):
-            return get_recipient_from_cache()
+        if self.request.user.is_superuser or self.request.user.has_perm(
+            "can_view_other_client"
+
+        ):
+            return Recipient.objects.all()
         else:
             user = self.request.user
-            return Mailing.objects.filter(owner=user)
+            return Recipient.objects.filter(owner=user)
 
 
 class RecipientDetailView(DetailView):
@@ -139,9 +148,9 @@ class MessageDeleteView(DeleteView):
 
     def test_func(self):
         return (
-                self.request.user.is_authenticated
-                and self.request.message.owner
-                and self.request.user.has_perm("mailing.message_delete")
+            self.request.user.is_authenticated
+            and self.request.message.owner
+            and self.request.user.has_perm("mailing.message_delete")
         )
 
     def handle_no_permission(self):
@@ -154,11 +163,13 @@ class MessageListView(ListView):
     context_object_name = "messages"
 
     def get_queryset(self):
-        if self.request.user.is_superuser or self.request.user.has_perm('can_view_all_messages'):
+        if self.request.user.is_superuser or self.request.user.has_perm(
+            "can_view_other_message"
+        ):
             return get_message_from_cache()
         else:
             user = self.request.user
-            return Mailing.objects.filter(owner=user)
+            return Message.objects.filter(owner=user)
 
 
 class MessageDetailView(DetailView):
@@ -173,7 +184,9 @@ class MailingListView(ListView):
     context_object_name = "mailings"
 
     def get_queryset(self):
-        if self.request.user.is_superuser or self.request.user.has_perm('app_name.can_view_all_mailings'):
+        if self.request.user.is_superuser or self.request.user.has_perm(
+            "can_view_other_mailing"
+        ):
             return get_mailing_from_cache()
         else:
             return Mailing.objects.filter(owner=self.request.user)
@@ -189,6 +202,13 @@ class MailingCreateView(CreateView):
         # Автоматически присваиваем пользователя созданной рассылке
         form.instance.owner = self.request.user
         return super().form_valid(form)
+
+    def get_form_kwargs(self):
+        # Получаем стандартные аргументы формы
+        kwargs = super().get_form_kwargs()
+        # Добавляем текущего пользователя в аргументы
+        kwargs['user'] = self.request.user
+        return kwargs
 
 
 class MailingUpdateView(UpdateView):
@@ -214,9 +234,9 @@ class MailingDeleteView(DeleteView):
 
     def test_func(self):
         return (
-                self.request.user.is_authenticated
-                and self.request.user.has_perm("mailing.mailing_delete")
-                or self.request.mailing.owner
+            self.request.user.is_authenticated
+            and self.request.user.has_perm("mailing.mailing_delete")
+            or self.request.mailing.owner
         )
 
     def handle_no_permission(self):
@@ -237,7 +257,7 @@ class SendMailingView(View):
 
     def get(self, request, pk):
         mailing = get_object_or_404(Mailing, pk=pk)
-        response = send_mailing_service()
+        response = send_mailing(mailing)
         return render(
             request, "mailing_detail.html", {"mailing": mailing, "response": response}
         )
@@ -251,7 +271,7 @@ class MailingAttemptListView(ListView):
     def get_queryset(self):
         """Проверка прав пользователя на просмотр попыток рассылки"""
         queryset = super().get_queryset()
-        return queryset.filter(owner=self.request.user)
+        return queryset.filter(mailing__owner=self.request.user)
 
     def get_context_data(self, **kwargs):
         """Добавление переменных в шаблон страницы статистики"""
@@ -259,10 +279,10 @@ class MailingAttemptListView(ListView):
         queryset = self.get_queryset()
         context["attempts_count"] = queryset.count()
         context["attempts_success_count"] = queryset.filter(status="successful").count()
-        context["attempts_error_count"] = queryset.filter(status="not_successful").count()
+        context["attempts_error_count"] = queryset.filter(
+            status="not_successful"
+        ).count()
         return context
-
-
 
     # def get_queryset(self):
     #     """Фильтрация объектов по текущему пользователю"""
@@ -280,3 +300,28 @@ class MailingAttemptListView(ListView):
     #     context["attempts_error_count"] = failed_mailings
     #
     #     return context
+
+
+class BlockMailingView(LoginRequiredMixin, View):
+
+    def get(self, request, mailing_id):
+        mailing = get_object_or_404(Mailing, id=mailing_id)
+        return render(request, "mailing_block.html", {"mailing": mailing})
+
+    def post(self, request, mailing_id):
+        mailing = get_object_or_404(Mailing, id=mailing_id)
+
+        if not request.user.has_perm("mailing.can_disable_mailings"):
+            return HttpResponseForbidden("У вас нет прав для блокировки рассылки.")
+
+        # Переключение состояния блокировки
+        mailing.is_blocked = not mailing.is_blocked
+
+        if mailing.is_blocked:
+            mailing.status = "blocked"
+        else:
+            if mailing.status == "blocked":
+                mailing.status = "unblocked"
+
+        mailing.save()
+        return redirect("mailing:mailing_list")

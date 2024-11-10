@@ -48,7 +48,9 @@ class Message(models.Model):
         verbose_name = "Сообщение"
         verbose_name_plural = "Сообщения"
         ordering = ["theme_message"]
-        permissions = [("can_view_other_message", "Может просматривать чужие сообщения")]
+        permissions = [
+            ("can_view_other_message", "Может просматривать чужие сообщения")
+        ]
 
 
 class Mailing(models.Model):
@@ -58,7 +60,8 @@ class Mailing(models.Model):
         ("created", "Создана"),
         ("running", "Запущена"),
         ("completed", "Завершена"),
-        ("deactivated", "Отключена"),
+        ("blocked", "Заблокирована"),
+        ("unblocked", "Разблокирована"),
     ]
 
     message = models.ForeignKey(Message, on_delete=models.CASCADE)
@@ -83,6 +86,7 @@ class Mailing(models.Model):
         null=True,
         on_delete=models.SET_NULL,
     )
+    is_blocked = models.BooleanField(default=False)
 
     def __str__(self):
         return f"Рассылка для сообщения: «{self.message}»"
@@ -105,7 +109,9 @@ class MailingAttempt(models.Model):
         ("not_successfully", "Не успешно"),
     ]
 
-    date_time_attempt = models.DateTimeField(auto_now_add=True, verbose_name="Дата и время попытки")
+    date_time_attempt = models.DateTimeField(
+        auto_now_add=True, verbose_name="Дата и время попытки"
+    )
     mailing = models.ForeignKey(Mailing, on_delete=models.CASCADE)
     mail_server_response = models.TextField(verbose_name="Ответ почтового сервера")
     status = models.CharField(
