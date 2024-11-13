@@ -139,11 +139,3 @@ class MailingAttempt(models.Model):
         verbose_name = "Попытка рассылки"
         verbose_name_plural = "Попытки рассылки"
         ordering = ["date_time_attempt"]
-
-    # @classmethod
-    # def get_user_statistics(cls, user):
-    #     """Получить статистику по попыткам рассылок пользователя"""
-    #     total_mailings = cls.objects.filter(owner=user).count()
-    #     successful_mailings = cls.objects.filter(owner=user, status="successfully").count()
-    #     failed_mailings = cls.objects.filter(owner=user, status="not_successfully").count()
-    #     return total_mailings, successful_mailings, failed_mailings

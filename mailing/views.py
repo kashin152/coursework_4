@@ -284,23 +284,6 @@ class MailingAttemptListView(ListView):
         ).count()
         return context
 
-    # def get_queryset(self):
-    #     """Фильтрация объектов по текущему пользователю"""
-    #     return MailingAttempt.objects.filter(owner=self.request.user)
-    #
-    # def get_context_data(self, **kwargs):
-    #     """Добавление переменных в шаблон страницы статистики"""
-    #     context = super().get_context_data(**kwargs)
-    #     # Получаем статистику по попыткам рассылок для текущего пользователя
-    #     total_mailings, successful_mailings, failed_mailings = MailingAttempt.get_user_statistics(self.request.user)
-    #
-    #     # Обновляем контекст
-    #     context["attempts_count"] = total_mailings
-    #     context["attempts_success_count"] = successful_mailings
-    #     context["attempts_error_count"] = failed_mailings
-    #
-    #     return context
-
 
 class BlockMailingView(LoginRequiredMixin, View):
 
