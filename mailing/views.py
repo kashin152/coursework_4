@@ -79,8 +79,7 @@ class RecipientDeleteView(DeleteView):
 
     def test_func(self):
         return (
-            self.request.user.is_authenticated
-            and self.request.user.has_perm("mailing.recipient_delete")
+            self.request.user.is_authenticated and self.request.user.has_perm("mailing.recipient_delete")
             or self.request.user.owner
         )
 

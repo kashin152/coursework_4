@@ -67,10 +67,10 @@ class Mailing(models.Model):
     message = models.ForeignKey(Message, on_delete=models.CASCADE)
     recipient = models.ManyToManyField(Recipient, related_name="Получатели")
     date_first_message = models.DateTimeField(
-        auto_now_add=True, verbose_name="Дата и время первой отправки"
+        null=True, blank=True, help_text="укажите время в формате 2023-10-01 12:00"
     )
     date_end_message = models.DateTimeField(
-        auto_now=True, verbose_name="Дата и время окончания отправки"
+        null=True, blank=True, help_text="укажите время в формате 2023-10-01 12:00"
     )
     status = models.CharField(
         max_length=20,

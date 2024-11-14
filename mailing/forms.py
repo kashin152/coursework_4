@@ -25,7 +25,11 @@ class MessageForm(forms.ModelForm):
 class MailingForm(forms.ModelForm):
     class Meta:
         model = Mailing
-        fields = ['message', 'recipient']  # Убедитесь, что эти поля есть в вашей модели
+        fields = ["date_first_message", "date_end_message", "message", "recipient", "status"]
+        widgets = {
+            "date_first_message": forms.DateTimeInput(attrs={"type": "datetime-local"}),
+            "date_end_message": forms.DateTimeInput(attrs={"type": "datetime-local"}),
+        }
 
     def __init__(self, user, *args, **kwargs):
         super().__init__(*args, **kwargs)
