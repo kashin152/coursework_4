@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    {% if form.instance.id %}
+        Редактирование
+    {% else %}
+        Регистрация
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="card mt-4">
+    <div class="card-header">
+        <h1 class="mb-4">
+            {% if form.instance.id %}
+                Редактирование данных
+            {% else %}
+                Регистрация на сайте
+            {% endif %}
+        </h1>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary">
+                {% if form.instance.id %}
+                    Редактировать
+                {% else %}
+                    Зарегистрироваться
+                {% endif %}
+            </button>
+            <a href="{% url 'users:user_list' %}" class="btn btn-secondary">Отмена</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

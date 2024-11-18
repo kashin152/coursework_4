@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block title %}Главная{% endblock %}
+
+{% block content %}
+<h1 class="display-30" style="margin-bottom: 30px;">Добро пожаловать!</h1>
+
+<p>Общее количество рассылок: {{ all_mailings_count }}</p>
+<p>Количество активных рассылок: {{ active_mailings_count }}</p>
+<p>Количество уникальных получателей: {{ unique_recipients_count }}</p>
+
+{% endblock %}

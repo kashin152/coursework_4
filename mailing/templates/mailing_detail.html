@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}Информация о рассылке{% endblock %}
+
+{% block content %}
+
+<div class="card mt-4">
+    <div class="card-header">
+        <h2 class="card-title">Информация о рассылке {{ mailing.pk }}</h2>
+    </div>
+    {% if user == mailing.owner or user.is_staff or perms.mailing.can_view_other_mailing  %}
+        <div class="card-body">
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">Дата и время первой отправки:
+                    {{ mailing.date_first_message|date:"d.M.Y H:i:s" }}</li>
+                <li class="list-group-item">Дата и время окончания отправки:
+                    {{ mailing.date_end_message|date:"d.M.Y H:i:s" }}</li>
+                <li class="list-group-item">Тема сообщения: {{ mailing.message.theme_message }}</li>
+                <li class="list-group-item">Текст сообщения: {{ mailing.message.text }}</li>
+                <li class="list-group-item">Статус: {{ mailing.get_status_display }}</li>
+                <li class="list-group-item">Получатели:
+                    <ul>
+                        {% for recipient in mailing.recipient.all %}
+                        <li>{{ recipient.full_name }} ({{ recipient.email }})</li>
+                        {% empty %}
+                            <li>Нет получателей</li>
+                        {% endfor %}
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        <div class="card-footer">
+            <div class="btn-group">
+                {% if perms.spam.can_disable_mailings or user.is_staff or perms.mailing.can_mailing_blocked %}
+                    {% if mailing.is_blocked %}
+                        <td><a href="{% url 'mailing:mailing_block' mailing.id %}" class="btn btn-warning">Разблокировать рассылку</a></td>
+                    {% else %}
+                        <td><a href="{% url 'mailing:mailing_block' mailing.id %}" class="btn btn-warning">Заблокировать рассылку</a></td>
+                    {% endif %}
+                {% endif %}
+                {% if user == mailing.owner or user.is_staff %}
+                    {% if not mailing.is_blocked %}
+                        <a href="{% url 'mailing:send_mailing' mailing.pk %}" class="btn btn-success">
+                            {% if mailing.status == "created" %}
+                                Отправить рассылку
+                            {% else %}
+                                Отправить повторно
+                            {% endif %}
+                        </a>
+                    {% endif %}
+                    <a href="{% url 'mailing:mailing_update' mailing.pk %}" class="btn btn-primary">
+                        Редактировать
+                    </a>
+                    <a href="{% url 'mailing:mailing_delete' mailing.pk %}" class="btn btn-danger">
+                        Удалить
+                    </a>
+                {% endif %}
+                <a href="{% url 'mailing:mailing_list' %}" class="btn btn-secondary">
+                    Назад
+                </a>
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+{% endblock %}
